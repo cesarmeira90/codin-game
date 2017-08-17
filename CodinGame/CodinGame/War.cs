@@ -56,13 +56,13 @@ class War
         public class Player
         {
             public int PlayerNumber { get; private set; }
-            public List<Card> HandCards { get; private set; }
-            public List<Card> BattleCards { get; private set; }
+            public Queue<Card> HandCards { get; private set; }
+            public Queue<Card> BattleCards { get; private set; }
             public Player(int number)
             {
-                HandCards = new List<Card>();
+                HandCards = new Queue<Card>();
+                BattleCards = new Queue<Card>();
                 PlayerNumber = number;
-                BattleCards = new List<Card>();
             }
 
             public bool IsReadyToWar()
@@ -70,10 +70,12 @@ class War
                 return (HandCards.Count >= 4);
             }
 
-            public void AddCards(IEnumerable<Card> cards, bool log = false)
+            public void AddCards(IEnumerable<Card> cards)
             {
-                if (log) Log("Player {0} won: {1}", PlayerNumber, string.Join(", ", cards));
-                HandCards.AddRange(cards);
+                foreach (Card card in cards)
+                {
+                    HandCards.Enqueue(card);
+                }
             }
             public void AddCard(Card card)
             {
@@ -89,9 +91,8 @@ class War
                 Card card = null;
                 if (HandCards.Count > 0)
                 {
-                    card = HandCards.FirstOrDefault();
-                    BattleCards.Add(card);
-                    HandCards.RemoveAt(0);
+                    card = HandCards.Dequeue();
+                    BattleCards.Enqueue(card);
                 }
                 return card;
             }
